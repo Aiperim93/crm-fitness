@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Информация о группе{% endblock %}
+{% load static %}
+
+{% block content %}
+    <div class="card m-5">
+        <div class="card-header">
+            <h2 class="d-flex align-items-center">Название: {{ group.name }}
+                <div class="ml-auto">
+                    <a class="mx-3" href="{% url 'webapp:group_update' group.pk %}"><i class="bi bi-pencil"></i></a>
+                    {% if perms.webapp.owner %}
+                        <a href="{% url 'webapp:group_delete' group.pk %}">
+                            <i class="bi bi-trash3-fill"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </h2>
+
+            <p>Время начала: {{ group.start_at|time:'H:i' }}</p>
+            {% if group.coach %}
+                <p>Тренер: <a href="{% url 'webapp:coach_detail' group.coach.pk %}">{{ group.coach }}</a></p>
+            {% else %}
+                <p>Тренер: Не назначен</p>
+            {% endif %}
+            {% if clients %}
+                <button class="sbmt_btn" id="start-class-btn">Начать занятие</button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="container">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags == 'alert alert-success' %}
+                        <strong>Сообщение:</strong> {{ message }}
+                    {% else %}
+                        <strong>Сообщение:</strong> {{ message }}
+                    {% endif %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if clients %}
+
+        <div id="coach-modal" class="modal">
+            <div class="modal-content">
+                <h3>Выберите тренера:</h3>
+                <div id="coach-list"></div>
+                <button class="sbmt_btn" id="accept-coach-btn">Принять</button>
+            </div>
+        </div>
+
+        <div id="link-modal" class="modal">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'webapp:send_invite' group.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="link" class="form-label">Ссылка на занятие:</label>
+                        <input type="text" class="form-control" id="link" name="link" required>
+                    </div>
+                    <button type="submit" class="sbmt_btn">Отправить</button>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div>
+            <form method="POST" action="{% url 'webapp:send_group_mailing' group.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Рассылка:</label>
+                    <input type="text" class="form-control" required name="message">
+                </div>
+                <button type="submit" class="ml-4 sbmt_btn" name="button_send" value="send_to_all_clients">Отправить
+                    всем клиентам
+                </button>
+                <button type="submit" class="ml-2 sbmt_btn" name="button_send" value="send_to_active_clients">Отправить
+                    активным клиентам
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+    <h4 class="text-center m-3">Добавить клиента в группу: </h4>
+    {% if clients_in_group %}
+        <form action="{% url 'webapp:group_client_update' group.pk %}" method="POST">
+            {% include 'partial/form.html' with button_text="Добавить" %}
+        </form>
+    {% else %}
+        <p class="ml-5">Нет активных клиентов для отображения</p>
+    {% endif %}
+
+    {% if clients %}
+        <h3 class="card-title text-center m-3 p-3">Клиенты</h3>
+        {% include 'partial/freeze_modal.html' %}
+        {% include 'partial/client_list_in_group.html' %}
+    {% else %}
+        <p class="text-center m-3 p-3"><i>В этой группе пока нет клиентов...</i></p>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{% static 'js/freeze.js' %}"></script>
+    <script type="module" src="{% static 'js/mailing.js' %}"></script>
+{% endblock %}

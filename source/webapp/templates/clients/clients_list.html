@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+    <h1 class="card-title text-center mt-3 pt-3">Клиенты</h1>
+
+    <div class="d-flex justify-content-end mb-3">
+        <h3 class="my-2">Всего: <span id="total-count"></span></h3>
+        <label for="date-picker"></label>
+        <input class="m-2" type="date" id="date-picker" name="date">
+        <button id="submit-btn" class="sbmt_btn">Применить</button>
+    </div>
+
+    {% include 'partial/partial_client_list.html' %}
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{% static 'js/total_active_clients.js' %}"></script>
+    <script type="module" src="{% static 'js/freeze.js' %}"></script>
+{% endblock %}

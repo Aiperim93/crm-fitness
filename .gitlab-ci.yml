@@ -1,0 +1,61 @@
+stages:
+  - test
+  - build
+  - deploy
+
+
+variables:
+  IMAGE_NAME: ray888ray/fitness_project
+  IMAGE_TAG: esdp
+
+
+test:
+  image: docker:latest
+  stage: test
+  script:
+    - docker-compose -f docker-compose.lint.yml up
+
+
+build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERDIR: "/certs"
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG ./source
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+
+
+deploy:
+  image: docker:latest
+  stage: deploy
+  when: on_success
+  only:
+    refs:
+      - develop
+      - master
+  before_script:
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - mkdir -p ~/.ssh
+    - cat "$AUTHOR_KEY" | tr -d '\r' > ~/.ssh/fitness_key
+    - chmod 600 ~/.ssh/fitness_key
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/fitness_key
+    - ssh-keyscan -H 95.85.6.9 >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp docker-compose.yml fitness@95.85.6.9:~/project/esdp-fitness/
+    - ssh fitness@95.85.6.9 "docker network disconnect -f esdp-fitness_default esdp-fitness_server_1"
+    - ssh fitness@95.85.6.9 "docker network disconnect -f esdp-fitness_default esdp-fitness_redis_1"
+    - ssh fitness@95.85.6.9 "docker network disconnect -f esdp-fitness_default esdp-fitness_db_1"
+    - ssh fitness@95.85.6.9 "cd ~/project/esdp-fitness/ &&
+      docker-compose down --remove-orphans"
+    - ssh fitness@95.85.6.9 "
+      cd ~/project/esdp-fitness/ &&
+      echo '$DOCKER_PASSWORD' | docker login --username "$DOCKER_USER" --password-stdin &&
+      docker-compose up -d"
+    - ssh fitness@95.85.6.9 "sudo docker image prune -a -f"

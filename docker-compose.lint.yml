@@ -1,0 +1,12 @@
+services:
+  check:
+    image: lintern
+    build:
+      context: ./source
+      dockerfile: ./Dockerfile
+    command: bash -c " pycodestyle  "
+  unit-test:
+    build:
+      context: ./source
+      dockerfile: ./Dockerfile
+    command: python manage.py test
