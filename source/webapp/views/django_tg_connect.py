@@ -33,7 +33,7 @@ class TelegramDriver:
         pass
 
     def invite_button(self, telegram_id) -> InlineKeyboardMarkup:
-        expiration_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
+        expiration_time = datetime.datetime.now() + datetime.timedelta(hours=1)
         expiration_text = expiration_time.strftime('%Y-%m-%d %H:%M:%S')
         button = InlineKeyboardButton(
             text="Присоединиться к тренировке",

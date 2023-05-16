@@ -15,3 +15,9 @@ class AddDataStates(StatesGroup):
     phone: State = State()
     region: State = State()
     photo: State = State()
+
+class SendMailingGroupState(StatesGroup):
+    group = State()
+    message = State()
+    all_or_active = State()
+    send_mailing = State()

@@ -13,7 +13,7 @@ class ClientForm(forms.ModelForm):
             'last_name',
             'email',
             'region',
-            'comment'
+            'comment',
         ]
 
 

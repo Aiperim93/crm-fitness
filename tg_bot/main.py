@@ -4,13 +4,14 @@ from invite_logic import register_handlers_invite
 from client_logic import register_handlers_clients
 from mailing_logic import register_handlers_mailing
 from client_logic import add_data_handlers_clients
-
+from group_mailing import register_handlers_group_mailing
 
 register_handlers_start(dp)
 register_handlers_invite(dp)
 register_handlers_clients(dp)
 register_handlers_mailing(dp)
 add_data_handlers_clients(dp)
+register_handlers_group_mailing(dp)
 
 
 if __name__ == '__main__':

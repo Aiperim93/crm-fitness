@@ -7,7 +7,10 @@ kb.add(button1)
 
 admin_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 button2 = KeyboardButton(text='Начать занятие')
+button4 = KeyboardButton(text='Отправить рассылку')
 admin_kb.add(button2)
+admin_kb.add(button4)
+
 
 add_data_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 button3 = KeyboardButton(text='Добавить данные')
@@ -51,7 +54,7 @@ def get_cancel_kb():
 
 
 def invite_button(telegram_id: str) -> InlineKeyboardMarkup:
-    expiration_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
+    expiration_time = datetime.datetime.now() + datetime.timedelta(hours=1)
     expiration_text = expiration_time.strftime('%Y-%m-%d %H:%M:%S')
     button = InlineKeyboardButton(
         text="Присоединиться к тренировке",

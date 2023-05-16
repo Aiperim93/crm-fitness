@@ -24,11 +24,26 @@ services:
       build:
         context: ./source
         dockerfile: ./Dockerfile
-      command: python manage.py test webapp/tests --noinput
+      command: bash -c "
+        python manage.py test webapp/tests --noinput
+        && python manage.py test
+        "
       env_file:
         - .env
       depends_on:
         - server
+    celery:
+      build:
+        context: ./source
+        dockerfile: ./Dockerfile
+      command: bash -c "celery -A main worker -B --loglevel=INFO"
+      volumes:
+        - ./source/:/code
+      depends_on:
+        - redis
+        - server
+      env_file:
+        - .env
     bot:
         build:
           context: ./tg_bot

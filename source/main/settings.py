@@ -27,18 +27,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 
 # Application definition
 
 CONSTANCE_BACKEND = 'constance.backends.redisd.CachingRedisBackend'
-CONSTANCE_REDIS_CACHE_TIMEOUT = 7 * 86400
+CONSTANCE_REDIS_CACHE_TIMEOUT = 24 * 60 * 60
 CONSTANCE_IGNORE_ADMIN_VERSION_CHECK = True
 
 
 CONSTANCE_REDIS_CONNECTION = {
     'host': 'redis',
     'port': 6379,
-    'db': 0,
+    'db': 2,
 }
 
 

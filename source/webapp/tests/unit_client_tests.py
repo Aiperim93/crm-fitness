@@ -4,10 +4,21 @@ from django.test import TestCase
 from http import HTTPStatus
 from webapp.models import Client, Group
 from webapp.forms import ClientForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 
 
 class ClientTest(TestCase):
     def setUp(self) -> None:
+        User = get_user_model()
+        self.user1 = User.objects.create_user('user1', password='password1')
+        self.user1.groups.create(name='manager')
+        owner_permissions = Permission.objects.filter(codename='owner', content_type__app_label='webapp')
+        manager_permissions = Permission.objects.filter(codename='manager', content_type__app_label='webapp')
+        all_permissions = owner_permissions.union(manager_permissions)
+        self.user1.user_permissions.add(*all_permissions)
+        self.client.force_login(self.user1)
+
         self.client1 = Client.objects.create(
             telegram_id='client1',
             phone='test_data',

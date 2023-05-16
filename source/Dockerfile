@@ -20,6 +20,6 @@ RUN LATEST_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_
     mv chromedriver /usr/bin/chromedriver && \
     chmod +x /usr/bin/chromedriver
 
+RUN pip install celery
+
 copy . /code
-
-

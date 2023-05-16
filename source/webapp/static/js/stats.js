@@ -76,7 +76,7 @@ function loadChartData(start_date, end_date) {
               yAxisID: 'y-count'
             },
             {
-              label: 'Количество Заморозок',
+              label: 'Количество заморозок',
               data: Object.values(data).map(function(d) {
                 return d.total_lazy_day;
               }),
